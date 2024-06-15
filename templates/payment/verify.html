@@ -1,0 +1,14 @@
+{% extends "../base.html" %}
+
+{% block title %}وضعیت پرداخت{% endblock %}
+
+{% block body %}
+    {% if status == "OK" %}
+        <h4>پرداخت شما با موفقیت انجام شد!</h4>
+    {% else %}
+        <h4>پرداخت ناموفق!</h4>
+    {% endif %}
+
+    <a href="{{url}}">رفتن به ربات</a>
+
+{% endblock %}

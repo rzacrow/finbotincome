@@ -1,0 +1,8 @@
+payment/migrations
+payment/__pycache__
+payment/__init__.py
+main/migrations
+main/__init__.py
+main/__pycache__
+finbot/__init__.py
+finbot/__pycache__
