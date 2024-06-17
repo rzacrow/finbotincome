@@ -3,12 +3,16 @@
 {% block title %}وضعیت پرداخت{% endblock %}
 
 {% block body %}
-    {% if status == "OK" %}
-        <h4>پرداخت شما با موفقیت انجام شد!</h4>
-    {% else %}
-        <h4>پرداخت ناموفق!</h4>
-    {% endif %}
-
-    <a href="{{url}}">رفتن به ربات</a>
+    <div class="container">
+        <div class="card {% if status == "OK" %}bg-green{% else %}bg-red{% endif %}">
+            <h2 class="color-white">Finbotincome</h2>
+            {% if status == "OK" %}
+                <h4>پرداخت شما با موفقیت انجام شد!</h4>
+            {% else %}
+                <h4>پرداخت ناموفق!</h4>
+            {% endif %}
+            <a href="{{url}}" class="btn {% if status == "OK" %}btn-green{% else %}btn-red{% endif %}">رفتن به ربات</a>
+        </div>
+    </div>
 
 {% endblock %}
