@@ -17,7 +17,7 @@ class BotVerifyPayment(View):
                 try:
                     invoice = Invoice.objects.get(authority=authority)
                 except:
-                    return HttpResponse(content="سفارشی با این کد رهگیری پیدا نشد! در صورت پرداخت از طریق ربات با پشتیبانی این موضوع را در میان بگذارید")
+                    return HttpResponse(content="سفارشی با این کد رهگیری پیدا نشد! در صورت پرداخت از طریق ربات، این موضوع را با پشتیبانی در میان بگذارید")
 
 
                 if invoice.status != "Active":
