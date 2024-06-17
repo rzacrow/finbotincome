@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import TelegramChannels, TelegramTicket, TelegramTicketAnswer, TelegramProfile, VipAccountAmount
+from .models import TelegramChannels, TelegramTicket, TelegramTicketAnswer, TelegramProfile, VipAccountAmount, SupportAccount
 from django.contrib import messages
+
 
 @admin.register(TelegramProfile)
 class TelegramProfileAdmin(admin.ModelAdmin):
@@ -10,6 +11,11 @@ class TelegramProfileAdmin(admin.ModelAdmin):
 @admin.register(TelegramChannels)
 class TelegramChannelsAdmin(admin.ModelAdmin):
     list_display = ['title', 'link']
+
+
+@admin.register(SupportAccount)
+class SupportAccountAdmin(admin.ModelAdmin):
+    list_display = ['platform', 'value']
 
 
 @admin.register(VipAccountAmount)
@@ -26,15 +32,14 @@ class VipAccountAmountAdmin(admin.ModelAdmin):
 
 class TelegramTicketAnswerInline(admin.TabularInline):
     model = TelegramTicketAnswer
-    fields = ['text', 'created']
+    extra = 1
 
 @admin.register(TelegramTicket)
 class TelegramTicketAdmin(admin.ModelAdmin):
     list_display = ['telegram_account', 'title', 'status']
     ordered = ['-created']
+    fields = ['telegram_account', 'text', 'status']
 
     inlines = [
         TelegramTicketAnswerInline,
     ]
-
-

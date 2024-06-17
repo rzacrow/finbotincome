@@ -1,4 +1,5 @@
 from django.db import models
+import requests, json
 
 
 class TelegramProfile(models.Model):
@@ -30,7 +31,7 @@ class TelegramTicket(models.Model):
     )
 
     telegram_account = models.ForeignKey(TelegramProfile, on_delete=models.CASCADE)
-    title = models.CharField(max_length=55)
+    title = models.CharField(max_length=55, blank=True, null=True)
     text = models.CharField(max_length=1024)
     status = models.CharField(max_length=6, default="Open", choices=TELEGRAM_TICKET_STATUS)
     created = models.DateTimeField(auto_now_add=True)
@@ -51,6 +52,25 @@ class TelegramTicketAnswer(models.Model):
     def __str__(self) -> str:
         return f"{self.ticket.title}"
     
+    def save(self, *args, **kwargs) :
+        url = f"https://api.telegram.org/bot7111711383:AAH5xL-FunByrIZvV_HyWr2y7d5e1UqKELo/sendMessage"
+
+        headers = {
+            "Content-Type" : "application/json"
+        }
+
+        text = f"پشتیبانی:\n\nتیکت شما:\n{self.ticket.text}\n\nپاسخ آن:\n{self.text}"
+        data = {
+            "chat_id" : self.ticket.telegram_account.telegram_id,
+            "text" : text
+        }
+
+        data = json.dumps(data)
+        result = requests.post(url=url, data=data, headers=headers)
+        print(result)
+        return super().save(*args, **kwargs)
+
+
     class Meta:
         verbose_name = 'پاسخ تیکت'
         verbose_name_plural = 'پاسخ تیکت'
@@ -58,12 +78,13 @@ class TelegramTicketAnswer(models.Model):
 
 class SupportAccount(models.Model):
     PLATFORM_CHOICES = (
-        ('Telegram', 'Telegram'),
-        ('Gmail', 'Gmail'),
-        ('Phone', 'Phone'),
+        ('Telegram', 'تلگرام'),
+        ('Gmail', 'ایمیل'),
+        ('Phone', 'تلفن'),
     )
 
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
+    value = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self) -> str:
         return f"{self.platform}"
@@ -80,6 +101,9 @@ class TelegramChannels(models.Model):
         ('TraderBot', 'ربات های تریدر'),
         ('Broker', 'ثبت نام بروکر'),
         ('Bonus', 'بونوس'),
+        ('PotentialCurrencies', 'ارزهای پر پتانسیل'),
+        ("Airdrop", 'ایردراپ ها'),
+        ("Eduction", 'آموزش')
     )
 
     title = models.CharField(max_length=25, choices=TITLE_CHOICES)
