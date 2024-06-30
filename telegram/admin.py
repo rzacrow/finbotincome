@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TelegramChannels, TelegramTicket, TelegramTicketAnswer, TelegramProfile, VipAccountAmount, SupportAccount
+from .models import TelegramChannels, TelegramTicket, TelegramTicketAnswer, TelegramProfile, VipAccountAmount, SupportAccount, BotConfig
 from django.contrib import messages
 
 
@@ -20,12 +20,12 @@ class SupportAccountAdmin(admin.ModelAdmin):
 
 @admin.register(VipAccountAmount)
 class VipAccountAmountAdmin(admin.ModelAdmin):
-    list_display = ['amount']
+    list_display = ['amount', 'expired']
 
     def save_model(self, request, obj, form, change):
         instances = VipAccountAmount.objects.all().count()
         if instances >= 1:
-            messages.add_message(request, messages.ERROR, "تنها مجاز به تعریف یک مقدار هستید. برای تغییر مقدار،فیلد موجود را حذف و یا همان را ویرایش کنید.")
+            messages.add_message(request, messages.ERROR, "تنها مجاز به تعریف یک مقدار هستید. برای تغییر مقدار،فیلد موجود را حذف کنید.")
             return
         
         super().save_model(request, obj, form, change)
@@ -43,3 +43,7 @@ class TelegramTicketAdmin(admin.ModelAdmin):
     inlines = [
         TelegramTicketAnswerInline,
     ]
+
+@admin.register(BotConfig)
+class BotConfigAdmin(admin.ModelAdmin):
+    list_display = ['name', 'username']

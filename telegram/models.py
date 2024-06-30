@@ -118,6 +118,7 @@ class TelegramChannels(models.Model):
 
 class VipAccountAmount(models.Model):
     amount = models.FloatField()
+    expired = models.IntegerField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f"{self.amount}"
@@ -133,3 +134,28 @@ class VipAccountAmount(models.Model):
     class Meta:
         verbose_name = 'اشتراک ویژه'
         verbose_name_plural = 'اشتراک ویژه'
+
+
+
+
+class BotConfig(models.Model):
+    name = models.CharField(max_length=100, blank=True, null=True)
+    username = models.CharField(max_length=100, blank=True, null=True)
+    token = models.CharField(max_length=255, blank=True, null=True)
+    
+    def __str__(self) -> str:
+        return f"{self.name}"
+    
+    class Meta:
+        verbose_name = 'تنظیمات بات'
+        verbose_name_plural = 'تنظیمات بات'
+
+    def save(self, *args, **kwargs):
+        instance = BotConfig.objects.all().count()
+
+        if instance >= 1:
+            return
+
+        super().save(*args, **kwargs)  
+
+

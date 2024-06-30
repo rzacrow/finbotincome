@@ -1,8 +1,10 @@
 from django.shortcuts import render, HttpResponse
 from django.views.generic import View
-from telegram.models import TelegramProfile
+from telegram.models import TelegramProfile, VipAccountAmount, BotConfig
 from .models import Invoice
 import requests, json
+import datetime
+from datetime import timedelta
 
 # Create your views here.
 class BotVerifyPayment(View):
@@ -11,7 +13,15 @@ class BotVerifyPayment(View):
             status = request.GET.get('Status')
 
             authority = request.GET.get('Authority')
-            bot_url = "https://t.me/traidassistant_bot"
+            bc = BotConfig.objects.last()
+
+            try:
+                bot_username = bc.username
+                bot_token = bc.token
+            except:
+                bot_username, bot_token = ""
+
+            bot_url = f"https://t.me/{bot_username}"
 
             if status == "OK":
                 try:
@@ -23,8 +33,18 @@ class BotVerifyPayment(View):
                 if invoice.status != "Active":
                     return HttpResponse(content="کد نامعتبر")
 
+
                 invoice.status = "Paid"
                 telegram_id = invoice.telegram_profile.telegram_id
+                
+                try:
+                    account_detail = VipAccountAmount.objects.last()
+                    if account_detail.expired:
+                        expired = invoice.created_at + timedelta(int(account_detail.expired))
+                        invoice.expired_at = expired
+                except:
+                    pass
+
                 invoice.save()
                 msg_id = invoice.msg_id
 
@@ -50,9 +70,9 @@ class BotVerifyPayment(View):
                     "Content-Type": "application/json"
                 }
 
-                update_url = "https://api.telegram.org/bot7111711383:AAH5xL-FunByrIZvV_HyWr2y7d5e1UqKELo/getUpdates"
-                url = f"https://api.telegram.org/bot7111711383:AAH5xL-FunByrIZvV_HyWr2y7d5e1UqKELo/sendMessage"
-                delete_url = f"https://api.telegram.org/bot7111711383:AAH5xL-FunByrIZvV_HyWr2y7d5e1UqKELo/deleteMessage"
+                update_url = f"https://api.telegram.org/bot{bot_token}/getUpdates"
+                url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                delete_url = f"https://api.telegram.org/bot{bot_token}/deleteMessage"
 
 
                 requests.post(url=url, data=data, headers=headers)
